@@ -1,22 +1,30 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
+  const navigate = useNavigate(); 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState(null); 
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setErrorMessage(null); 
+
     try {
       const response = await authService.login(username, password);
-      console.log('Inicio de sesión exitoso:', response);
+         localStorage.setItem('token', response.token); 
+
+       navigate('/dashboard');
     } catch (error) {
-      console.error('Error al iniciar sesión:', error);
+      setErrorMessage(error.message || 'Error al iniciar sesión');
     }
   };
 
   return (
     <div className="container">
       <h1>Iniciar sesión</h1>
+      {errorMessage && <p className="error">{errorMessage}</p>} {/* Mostrar error */}
       <form onSubmit={handleSubmit}>
         <div>
           <label htmlFor="username">Usuario:</label>
